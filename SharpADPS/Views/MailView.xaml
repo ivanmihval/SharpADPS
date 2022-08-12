@@ -1,0 +1,410 @@
+﻿<Window x:Class="WPFSharpADPS.Views.MailView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="500" Width="340"
+        xmlns:converters="clr-namespace:WPFSharpADPS.Converters"
+        xmlns:vm="clr-namespace:WPFSharpADPS.ViewModels" xmlns:helpers="clr-namespace:WPFSharpADPS.Helpers">
+    <Window.DataContext>
+        <vm:MailViewModel/>
+    </Window.DataContext>
+    <Window.Style>
+        <Style TargetType="Window">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.ViewExisting}">
+                    <Setter Property="Title">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0} {1}">
+                                <Binding Path="TranslationViewObject.MailViewWindowTitle"/>
+                                <Binding Path="MessageFilename"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.EditExisting}">
+                    <Setter Property="Title">
+                        <Setter.Value>
+                            <MultiBinding StringFormat="{}{0} {1}">
+                                <Binding Path="TranslationViewObject.MailEditWindowTitle"/>
+                                <Binding Path="MessageFilename"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.New}">
+                    <Setter Property="Title" Value="{Binding TranslationViewObject.MailNewMessageWindowTitle}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Style>
+    <Window.Resources>
+        <helpers:BindingProxy x:Key="DataContextProxy" Data="{Binding}"/>
+        <converters:CoordinatesConverter x:Key="CoordinatesConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <Style x:Key="SizeTextBlock" TargetType="TextBlock">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MessageFileIsTooBig}" Value="True">
+                    <Setter Property="Foreground" Value="Red"/>
+                    <Setter Property="FontWeight" Value="ExtraBold"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MessageFileIsTooBig}" Value="False">
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="FontWeight" Value="Normal"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ProgressBarVisibilityControlStyle" TargetType="StackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsProgressbarVisible}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsProgressbarVisible}" Value="False">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="ButtonsStackPanelNewModeStyle" TargetType="StackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.New}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.ViewExisting}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.EditExisting}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ButtonsStackPanelViewExistingModeStyle" TargetType="StackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.New}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.ViewExisting}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.EditExisting}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ButtonsStackPanelEditExistingModeStyle" TargetType="StackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.New}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.ViewExisting}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.EditExisting}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="MainStackPanelControlModeStyle" TargetType="StackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.New}">
+                    <Setter Property="IsEnabled" Value="True"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.ViewExisting}">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding MailViewModelMode}" Value="{x:Static vm:MailViewModelMode.EditExisting}">
+                    <Setter Property="IsEnabled" Value="True"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="StandardLabel">
+            <Setter Property="Control.HorizontalAlignment" Value="Left"/>
+            <Setter Property="Control.VerticalAlignment" Value="Top"/>
+            <Setter Property="Control.Height" Value="28"/>
+        </Style>
+        <Style x:Key="StandardTextBox">
+            <Setter Property="Control.Margin" Value="0,21,0,5"/>
+            <Setter Property="Control.VerticalAlignment" Value="Center"/>
+            <Setter Property="Control.Height" Value="23"/>
+        </Style>
+    </Window.Resources>
+    <Window.IsEnabled>
+        <Binding Path="IsProgressbarVisible" Converter="{StaticResource InverseBooleanConverter}"/>
+    </Window.IsEnabled>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition MinHeight="5" MaxHeight="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Grid.Row="0" Visibility="Visible" Style="{StaticResource MainStackPanelControlModeStyle}">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Right">
+                <TextBlock Style="{StaticResource SizeTextBlock}" FontSize="15">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}: {1}/{2}">
+                            <Binding Path="TranslationViewObject.MailTotalBytes"></Binding>
+                            <Binding Path="JsonBytesLength"/>
+                            <Binding Path="MaxJsonBytes"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </StackPanel>
+            
+            <Grid>
+                <Label Content="{Binding TranslationViewObject.MailNameHeader}" Style="{StaticResource StandardLabel}"/>
+                <TextBox Text="{Binding MailName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource StandardTextBox}" Margin="0,21,0,0"/>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailAdditionalNotesHeader}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding MailAdditionalNotes, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MailAdditionalNotesIsNull, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource StandardTextBox}" Margin="0"  Grid.Column="0"/>
+                    <CheckBox Grid.Column="1" Content="NULL" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding MailAdditionalNotesIsNull}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailInlineMessageHeader}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding MailInlineMessage, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding MailInlineMessageIsNull, Converter={StaticResource InverseBooleanConverter}}" Style="{StaticResource StandardTextBox}" Margin="0"  Grid.Column="0"/>
+                    <CheckBox Grid.Column="1" Content="NULL" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding MailInlineMessageIsNull}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailCoordinatesListHeader}" Style="{StaticResource StandardLabel}"/>
+                <DockPanel Grid.Row="1">
+                    <ListBox MinWidth="130" MinHeight="50" MaxHeight="100" ItemsSource="{Binding LocationViewObjects}" DockPanel.Dock="Left" Margin="0,0,5,0" LostFocus="CoordinatesListBox_OnLostFocus" GotFocus="CoordinatesListBox_OnGotFocus">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Coordinates, Converter={StaticResource CoordinatesConverter}}">
+                                    <TextBlock.ToolTip>
+                                        <TextBlock>
+                                            <Run>
+                                                <Run.Text>
+                                                    <MultiBinding StringFormat="{}{0}: {1}" Mode="OneWay">
+                                                        <Binding Path="Data.TranslationViewObject.MailCoordinatesListTooltipLatitudePart" Source="{StaticResource DataContextProxy}"/> 
+                                                        <Binding Path="Latitude"/>
+                                                    </MultiBinding>
+                                                    <!--<Binding Path="Latitude" StringFormat="Latitude: {0}" Mode="OneWay"/>-->
+                                                </Run.Text>
+                                            </Run>
+                                            <LineBreak/>
+                                            
+                                            <Run>
+                                                <Run.Text>
+                                                    <MultiBinding StringFormat="{}{0}: {1}" Mode="OneWay">
+                                                        <Binding Path="Data.TranslationViewObject.MailCoordinatesListTooltipLongitudePart" Source="{StaticResource DataContextProxy}"/> 
+                                                        <Binding Path="Longitude"/>
+                                                    </MultiBinding>
+                                                </Run.Text>
+                                            </Run>
+                                        </TextBlock>
+                                    </TextBlock.ToolTip>
+                                    
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Grid VerticalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <DockPanel Grid.Row="0">
+                            <Button Content="{Binding TranslationViewObject.MailCoordinatesAddButtonText}" DockPanel.Dock="Left" Margin="0,0,2,0" Command="{Binding ClickAddCoordinatesButtonCommand}"/>
+                            <TextBox Text="{Binding CoordinatesTextBoxContent, UpdateSourceTrigger=PropertyChanged}" ToolTip="{Binding TranslationViewObject.MailCoordinatesTextBoxTooltip}"/>
+                        </DockPanel>
+                        <Button Grid.Row="1" Content="{Binding TranslationViewObject.MailCoordinatesDeleteButtonText}" Margin="0,2,0,0" GotFocus="CoordinatesListBox_OnGotFocus" Command="{Binding ClickDeleteCoordinatesButtonCommand}"/>
+                    </Grid>
+                </DockPanel>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailAttachmentsHeader}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <ListBox MinWidth="130" MinHeight="50" MaxHeight="100" ItemsSource="{Binding MailAttachments}" LostFocus="AttachmentsListBox_OnLostFocus" GotFocus="AttachmentsListBox_OnGotFocus" Grid.Row="0">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Attachment.Filename}">
+                                    <TextBlock.ToolTip>
+                                        <TextBlock>
+                                            <Run>
+                                                <Run.Text>
+                                                    <MultiBinding StringFormat="{}{0}: {1}" Mode="OneWay">
+                                                        <Binding Path="Data.TranslationViewObject.MailAttachmentTooltipFilenamePart" Source="{StaticResource DataContextProxy}"/> 
+                                                        <Binding Path="Attachment.Filename"/>
+                                                    </MultiBinding>
+                                                    <!--<Binding Path="Attachment.Filename" StringFormat="Filename: {0}"/>-->
+                                                </Run.Text>
+                                            </Run>
+                                            <LineBreak/>
+                                            
+                                            <Run>
+                                                <Run.Text>
+                                                    <MultiBinding StringFormat="{}{0}: {1}" Mode="OneWay">
+                                                        <Binding Path="Data.TranslationViewObject.MailAttachmentTooltipSizeBytesPart" Source="{StaticResource DataContextProxy}"/> 
+                                                        <Binding Path="Attachment.SizeBytes"/>
+                                                    </MultiBinding>
+                                                    <!--<Binding Path="Attachment.SizeBytes" StringFormat="Size (bytes): {0}"/>-->
+                                                </Run.Text>
+                                            </Run>
+                                            <LineBreak/>
+                                            
+                                            <Run>
+                                                <Run.Text>
+                                                    <MultiBinding StringFormat="{}{0}: {1}" Mode="OneWay">
+                                                        <Binding Path="Data.TranslationViewObject.MailAttachmentTooltipHashsumPart" Source="{StaticResource DataContextProxy}"/> 
+                                                        <Binding Path="Attachment.HashsumHex"/>
+                                                    </MultiBinding>
+                                                    <!--<Binding Path="Attachment.HashsumHex" StringFormat="Hashsum: {0}"/>-->
+                                                </Run.Text>
+                                            </Run>
+                                        </TextBlock>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    
+                    <Grid VerticalAlignment="Center" Grid.Row="1" Margin="0,2,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="{Binding TranslationViewObject.MailAttachmentAddButtonText}" Grid.Column="0" Margin="0,0,2,0" Command="{Binding ClickAddAttachmentButtonCommand}"/>
+                        <Button Content="{Binding TranslationViewObject.MailAttachmentDeleteButtonText}" Grid.Column="1" Margin="2,0,0,0" Command="{Binding ClickDeleteAttachmentButtonCommand}" GotFocus="AttachmentsListBox_OnGotFocus"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailCreationDateHeader}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" IsEnabled="{Binding DatetimeCreatedIsNow, Converter={StaticResource InverseBooleanConverter}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <DatePicker Grid.Row="0" Grid.Column="0" DisplayDate="{Binding Mail.DateCreated}" SelectedDate="{Binding DateCreatedDate}" Margin="0,0,0,2"/>
+
+                        <Grid Grid.Row="1" Margin="0,2,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ComboBox Grid.Column="0" ItemsSource="{Binding Hours}" Text="{Binding DateCreatedHour}"/>
+                            <TextBlock Text=":" FontSize="20" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Column="2" ItemsSource="{Binding Minutes}" Text="{Binding Mail.DateCreated, StringFormat=mm}"/>
+                        </Grid>
+                    </Grid>
+
+                    <CheckBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Content="{Binding TranslationViewObject.MailCreationDateNowCheckBoxText}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding DatetimeCreatedIsNow}"/>
+
+                </Grid>
+            </Grid>
+
+
+            <!--<DockPanel>
+                <DatePicker DockPanel.Dock="Left" DisplayDate="{Binding Mail.DateCreated}" SelectedDate="{Binding Mail.DateCreated}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="15"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ComboBox Grid.Column="0" ItemsSource="{Binding Hours}" Text="{Binding Mail.DateCreated, StringFormat=HH}"/>
+                    <TextBlock Text=":" FontSize="20" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ComboBox Grid.Column="2" ItemsSource="{Binding Minutes}" Text="{Binding Mail.DateCreated, StringFormat=mm}"/>
+                </Grid>
+            </DockPanel>-->
+
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource ProgressBarVisibilityControlStyle}">
+            <Grid>
+                <ProgressBar Width="100" Height="25" Maximum="{Binding MaxProgressBarValue}" Value="{Binding ProgressBarValue}" IsIndeterminate="{Binding IsProgressbarIndeterminate}"/>
+                <TextBlock Text="{Binding ProgressBarText}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="8"/>
+            </Grid>
+        </StackPanel>
+
+        <!--New Mode-->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource ButtonsStackPanelNewModeStyle}">
+            <Button Content="{Binding TranslationViewObject.MailCloseButtonText}" Margin="0,0,10,0" Command="{Binding ClickCloseButtonCommand}"/>
+            <Button Content="{Binding TranslationViewObject.MailSaveButtonText}" Command="{Binding ClickSaveMessageButtonCommand}"/>
+        </StackPanel>
+
+        <!--View Existing Mode-->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource ButtonsStackPanelViewExistingModeStyle}">
+            <Button Content="{Binding TranslationViewObject.MailExportToFolderButtonText}" Margin="0,0,10,0" Command="{Binding ClickExportToFolderButtonCommand}"/>
+            <Button Content="{Binding TranslationViewObject.MailUnlockButtonText}" Margin="0,0,10,0" Command="{Binding ClickChangeLockStatusButtonCommand}"/>
+            <Button Content="{Binding TranslationViewObject.MailCloseButtonText}" Command="{Binding ClickCloseButtonCommand}"/>
+        </StackPanel>
+
+        <!--Edit Existing Mode-->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource ButtonsStackPanelEditExistingModeStyle}">
+            <Button Content="{Binding TranslationViewObject.MailSaveCopyButtonText}" Margin="0,0,10,0" Command="{Binding ClickSaveMessageButtonCommand}"/>
+            <Button Content="{Binding TranslationViewObject.MailLockButtonText}" Margin="0,0,10,0" Command="{Binding ClickChangeLockStatusButtonCommand}"/>
+            <Button Content="{Binding TranslationViewObject.MailCloseButtonText}" Command="{Binding ClickCloseButtonCommand}"/>
+        </StackPanel>
+        
+        <!--</DockPanel>-->
+    </Grid>
+</Window>

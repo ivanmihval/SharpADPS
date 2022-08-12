@@ -1,0 +1,258 @@
+﻿<Window x:Class="WPFSharpADPS.Views.MailsFilterView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Filter mails" Height="550" Width="350"
+        xmlns:vm="clr-namespace:WPFSharpADPS.ViewModels"
+        xmlns:converters="clr-namespace:WPFSharpADPS.Converters">
+    <Window.DataContext>
+        <vm:MailsFilterViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <converters:SliderValueDistanceConverter x:Key="SliderValueDistanceConverter"/>
+        <Style x:Key="StandardLabel">
+            <Setter Property="Control.HorizontalAlignment" Value="Left"/>
+            <Setter Property="Control.VerticalAlignment" Value="Top"/>
+            <Setter Property="Control.Height" Value="28"/>
+            <Setter Property="Control.Margin" Value="1,0"/>
+        </Style>
+        <Style x:Key="StandardTextBox">
+            <Setter Property="Control.Margin" Value="0"/>
+            <Setter Property="Control.VerticalAlignment" Value="Center"/>
+            <Setter Property="Control.Height" Value="23"/>
+        </Style>
+        <Style x:Key="StandardTextBoxGrid">
+            <Setter Property="Control.Margin" Value="0,0,0,5"/>
+        </Style>
+        <Style x:Key="CoordinatesFilterTextBoxStyle" BasedOn="{StaticResource StandardTextBox}" TargetType="TextBox">
+            <Setter Property="ToolTip" Value="{Binding TranslationViewObject.MailsFilterCoordinatesTooltip}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsValidCoordinatesFilterValue}" Value="False">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsValidCoordinatesFilterValue}" Value="True">
+                    <Setter Property="BorderBrush" Value="#FF7F9DB9"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="AttachmentSizeFilterTextBoxStyle" BasedOn="{StaticResource StandardTextBox}" TargetType="TextBox">
+            <Setter Property="ToolTip" Value="{Binding TranslationViewObject.MailsFilterMaxAttachmentSizeTooltip}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsValidMaxAttachmentSizeValue}" Value="False">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsValidMaxAttachmentSizeValue}" Value="True">
+                    <Setter Property="BorderBrush" Value="#FF7F9DB9"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="PopulationFilterTextBoxStyle" BasedOn="{StaticResource StandardTextBox}" TargetType="TextBox">
+            <Setter Property="ToolTip" Value="{Binding TranslationViewObject.MailsFilterPopulationTooltip}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsValidPopulationValue}" Value="False">
+                    <Setter Property="BorderBrush" Value="Red"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsValidPopulationValue}" Value="True">
+                    <Setter Property="BorderBrush" Value="#FF7F9DB9"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition MinHeight="5" MaxHeight="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Grid.Row="0" Visibility="Visible">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterNameCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding NameFilterValue, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsNameFilterEnabled}" Style="{StaticResource StandardTextBox}" Grid.Column="0"/>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsNameFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterAdditionalNotesCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding AdditionalNotesFilterValue, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsAdditionalNotesFilterEnabled}" Style="{StaticResource StandardTextBox}" Grid.Column="0"/>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsAdditionalNotesFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterInlineMessageCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding InlineMessageFilterValue, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsInlineMessageFilterEnabled}" Style="{StaticResource StandardTextBox}" Grid.Column="0"/>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsInlineMessageFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterHashsumCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding HashsumValue, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsAttachmentFilterEnabled}" Style="{StaticResource StandardTextBox}" Grid.Column="0"/>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsAttachmentFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterMaxAttachmentSizeCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding RawMaxAttachmentSizeValue, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsAttachmentSizeFilterEnabled}" Style="{StaticResource AttachmentSizeFilterTextBoxStyle}" Grid.Column="0"/>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsAttachmentSizeFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Style="{StaticResource StandardLabel}">
+                    <Label.Content>
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} ({1} {2})">
+                                    <Binding Path="TranslationViewObject.MailsFilterCoordinatesCaptionCoordinatesPart"/>
+                                    <Binding Path="TranslationViewObject.MailsFilterCoordinatesCaptionRadiusPart"/>
+                                    <Binding Path="RadiusMetersValue" Converter="{StaticResource SliderValueDistanceConverter}" Mode="OneWay"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Label.Content>
+                </Label>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="5"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding RawCoordinatesFilterValue, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsLocationFilterEnabled}" Style="{StaticResource CoordinatesFilterTextBoxStyle}"  Grid.Column="0"/>
+                        <Slider Grid.Column="2" Maximum="{Binding RadiusSliderMaximum, Mode=OneWay}" Minimum="{Binding RadiusSliderMinimum, Mode=OneWay}" Value="{Binding RadiusSliderValue}" Interval="25" IsEnabled="{Binding IsLocationFilterEnabled}" />
+                    </Grid>
+
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsLocationFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterDateFromCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <DatePicker Style="{StaticResource StandardTextBox}" SelectedDate="{Binding DateTimeFromFilterValue}" Grid.Column="0" IsEnabled="{Binding IsDateTimeFromFilterEnabled}"/>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsDateTimeFromFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterDateToCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <DatePicker Style="{StaticResource StandardTextBox}" SelectedDate="{Binding DateTimeToFilterValue}" Grid.Column="0" IsEnabled="{Binding IsDateTimeToFilterEnabled}"/>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsDateTimeToFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="22"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="{Binding TranslationViewObject.MailsFilterDampingDistanceCaption}" Style="{StaticResource StandardLabel}"/>
+                <Grid Grid.Row="1" Style="{StaticResource StandardTextBoxGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding RawPopulationValue, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsDampingDistanceFilterEnabled}" Style="{StaticResource PopulationFilterTextBoxStyle}" Grid.Column="0">
+                        <TextBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="{Binding TranslationViewObject.MailsFilterFindNearestCityMenuHeader}" Command="{Binding FindNearestBigCityCommand}"/>
+                            </ContextMenu>
+                        </TextBox.ContextMenu>
+                    </TextBox>
+                    <CheckBox Grid.Column="1" Content="{Binding TranslationViewObject.MailsFilterEnableCheckBoxText}" VerticalAlignment="Center" Margin="20, 0, 0, 0" IsChecked="{Binding IsDampingDistanceFilterEnabled}"/>
+                </Grid>
+            </Grid>
+
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Button Content="{Binding TranslationViewObject.MailsFilterCancelButtonText}" Margin="0,0,10,0" Command="{Binding CancelCommand}"/>
+            <Button Content="{Binding TranslationViewObject.MailsFilterSearchButtonText}" Command="{Binding SearchCommand}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+            <ComboBox Loaded="FilterModeCombobox_OnLoaded" Name="FilterModeCombobox" Width="165" ItemsSource="{Binding FilterModeComboboxItems}" DisplayMemberPath="Title" SelectedValuePath="Title" SelectedItem="{Binding SelectedFilterModeComboboxItem, Mode=TwoWay}"/>
+        </StackPanel>
+    </Grid>
+</Window>

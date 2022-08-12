@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{22DA0E8C-40A8-4C2D-9DF5-D0DBB72A402A}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WPFSharpADPS</RootNamespace>
+    <AssemblyName>SharpADPS</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="Views\MailsFilterView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\OverviewView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Converters\BoolToColorConverter.cs" />
+    <Compile Include="Converters\CoordinatesConverter.cs" />
+    <Compile Include="Converters\InverseBooleanConverter.cs" />
+    <Compile Include="Converters\CountConverter.cs" />
+    <Compile Include="Converters\SliderValueDistanceConverter.cs" />
+    <Compile Include="Helpers\BindingProxy.cs" />
+    <Compile Include="Helpers\CommandHandler.cs" />
+    <Compile Include="Helpers\SaveFileDialogProvider\ISaveFileDialogProvider.cs" />
+    <Compile Include="Helpers\SaveFileDialogProvider\WinFormsSaveFileDialogProvider.cs" />
+    <Compile Include="Helpers\FolderBrowserDialogProvider\IFolderBrowserDialogProvider.cs" />
+    <Compile Include="Helpers\FolderBrowserDialogProvider\WinFormsFolderBrowserDialogProvider.cs" />
+    <Compile Include="Helpers\HashsumEngine\HashsumEngineManager.cs" />
+    <Compile Include="Helpers\HashsumEngine\OpensslHashsumEngine.cs" />
+    <Compile Include="Helpers\HashsumEngine\DotNetHashsumEngine.cs" />
+    <Compile Include="Helpers\HashsumEngine\HashsumEngineType.cs" />
+    <Compile Include="Helpers\HashsumEngine\IHashsumEngine.cs" />
+    <Compile Include="Helpers\MailViewRepositoryChangedResult.cs" />
+    <Compile Include="Helpers\MessageBoxProvider\IMessageBoxProvider.cs" />
+    <Compile Include="Helpers\MessageBoxProvider\WinFormsMessageBoxProvider.cs" />
+    <Compile Include="Helpers\OpenFileDialogProvider\IOpenFileDialogProvider.cs" />
+    <Compile Include="Helpers\OpenFileDialogProvider\WinFormsOpenFileDialogProvider.cs" />
+    <Compile Include="Helpers\PropertyChangedModel.cs" />
+    <Compile Include="Helpers\WindowsExplorer.cs" />
+    <Compile Include="Helpers\WorldCitiesParser.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\GlobalLoggingStorage.cs" />
+    <Compile Include="Models\AttachmentViewObject.cs" />
+    <Compile Include="Models\HashsumEngineViewObject.cs" />
+    <Compile Include="Models\LocationViewObject.cs" />
+    <Compile Include="Models\MailViewObject.cs" />
+    <Compile Include="Models\Translation\TranslationMenuItem.cs" />
+    <Compile Include="SettingsManager\TranslationLoadingMode.cs" />
+    <Compile Include="Models\Translation\TranslationModel.cs" />
+    <Compile Include="Models\Translation\TranslationViewObject.cs" />
+    <Compile Include="SettingsManager\SettingsManager.cs" />
+    <Compile Include="SettingsManager\SettingsModel.cs" />
+    <Compile Include="ViewModels\MailsFilterViewModel.cs" />
+    <Compile Include="ViewModels\MailViewModel.cs" />
+    <Compile Include="ViewModels\OverviewViewModel.cs" />
+    <Compile Include="Views\MailsFilterView.xaml.cs">
+      <DependentUpon>MailsFilterView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MailView.xaml.cs">
+      <DependentUpon>MailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\OverviewView.xaml.cs">
+      <DependentUpon>OverviewView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="..\worldcities\big_cities.csv">
+      <Link>big_cities.csv</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreADPS\CoreADPS.csproj">
+      <Project>{E965D397-8362-4718-83A7-51D19A814EC2}</Project>
+      <Name>CoreADPS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\documentation.txt">
+      <Link>documentation.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

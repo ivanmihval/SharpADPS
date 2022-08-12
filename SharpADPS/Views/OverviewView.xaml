@@ -1,0 +1,187 @@
+﻿<Window x:Class="WPFSharpADPS.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+        xmlns:converters="clr-namespace:WPFSharpADPS.Converters"
+        xmlns:helpers="clr-namespace:WPFSharpADPS.Helpers"
+        xmlns:vm="clr-namespace:WPFSharpADPS.ViewModels"
+        Title="{Binding Title, Mode=OneWay}" 
+        Name="OverviewWindow"
+        IsEnabled="{Binding IsWindowEnabled}" 
+        ContentRendered="MainWindow_OnContentRendered" 
+        Closing="MainWindow_OnClosing"
+        SizeChanged="MainWindow_OnSizeChanged">
+    <Window.DataContext>
+        <vm:OverviewViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <converters:CountConverter x:Key="CountConverter"/>
+        <helpers:BindingProxy x:Key="DataContextProxy" Data="{Binding}"/>
+    </Window.Resources>
+    <Grid Name="MainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition MinHeight="20" MaxHeight="40"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBox Width="0" Height="0" Name="UnfocusElement"/>
+        
+        <Menu Grid.Row="0">
+            <MenuItem Header="{Binding TranslationViewObject.OverviewFilesMenuTitle}">
+                <MenuItem Header="{Binding TranslationViewObject.OverviewNewRepositoryTitle}" Command="{Binding NewRepositoryDialogCommand}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewLoadRepositoryTitle}" Command="{Binding OpenRepositoryDialogCommand}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewNewMailTitle}" Command="{Binding NewMailDialogCommand}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewCopyToRepositoryTitle}" Command="{Binding CopyMailsToRepositoryDialogCommand}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewDeleteFromRepositoryTitle}" Command="{Binding DeleteMailsDialogCommand}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewRecentRepositoriesTitle}" ItemsSource="{Binding PreviousRepositoryPaths}">
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding}"/>
+                            <Setter Property="Command" Value="{Binding Data.OpenPreviousRepositoryDialogCommand, Source={StaticResource DataContextProxy}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewExitTitle}" Click="Exit_OnClick"/>
+            </MenuItem>
+            <MenuItem Header="{Binding TranslationViewObject.OverviewSelectionMenuTitle}">
+                <MenuItem Header="{Binding TranslationViewObject.OverviewRemoveSelectedItemsTitle}" Command="{Binding UnlistSelectedMails}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewLeaveSelectedItemsTitle}" Command="{Binding LeaveOnlySelectedMails}"/>
+            </MenuItem>
+            <MenuItem Header="{Binding TranslationViewObject.OverviewFiltersMenuTitle}">
+                <MenuItem Header="{Binding TranslationViewObject.OverviewResetFiltersTitle}" Command="{Binding ResetFiltersDialogCommand}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewApplyFiltersTitle}" Command="{Binding OpenApplyFiltersDialogCommand}"/>
+            </MenuItem>
+            <MenuItem Header="{Binding TranslationViewObject.OverviewSettingsMenuTitle}">
+                <MenuItem Header="Hashsum Engine" ItemsSource="{Binding HashsumEngineViewObjects, Mode=OneWay}">
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Name, Mode=OneWay}"/>
+                            <Setter Property="IsChecked" Value="{Binding IsSelected, Mode=OneWay}"/>
+                            <Setter Property="Command" Value="{Binding Data.SelectHashsumEngineType, Source={StaticResource DataContextProxy}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </MenuItem>
+                <MenuItem Header="Logging">
+                    <MenuItem Header="Capture logs to the RAM" Command="{Binding SwitchLoggingStateCommand}" IsChecked="{Binding IsLoggingActive}"/>
+                    <MenuItem Header="Delete logs from the RAM" Command="{Binding CleanLogsCommand}"/>
+                    <MenuItem Header="Dump logs to file" Command="{Binding DumpLogsCommand}"/>
+                </MenuItem>
+                <MenuItem Header="Language">
+                    <MenuItem Header="Choose" ItemsSource="{Binding TranslationMenuItems, Mode=OneWay}">
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="MenuItem">
+                                <Setter Property="Header" Value="{Binding Caption, Mode=OneWay}"/>
+                                <Setter Property="Command" Value="{Binding Data.ChooseTranslationCommand, Source={StaticResource DataContextProxy}}"/>
+                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </MenuItem>
+                    <MenuItem Header="Save current translation to external file..." Command="{Binding AddExternalTranslationCopyCommand}"/>
+                    <MenuItem Header="Load existing translation file..." Command="{Binding AddExistingTranslationCommand}"/>
+                    <MenuItem Header="Unlink all external translations" Command="{Binding RemoveExternalTranslationsCommand}"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="{Binding TranslationViewObject.OverviewHelpMenuTitle}">
+                <MenuItem Header="{Binding TranslationViewObject.OverviewDocumentationTitle}" Command="{Binding OpenDocumentationFolder}"/>
+                <MenuItem Header="{Binding TranslationViewObject.OverviewAboutTitle}" Click="About_OnClick"/>
+            </MenuItem>
+        </Menu>
+
+        <DataGrid Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" x:Name="MailsGrid" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" ItemsSource="{Binding Mails}" PreviewKeyUp="DataGrid_OnKeyEnterUp" PreviewKeyDown="DataGrid_OnKeyEnterDown">
+            <!--https://stackoverflow.com/a/15413074-->
+            <DataGrid.Resources>
+                <Style TargetType="{x:Type DataGridRow}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected}" />
+                    <Setter Property="ContextMenu">
+                        <Setter.Value>
+                            <ContextMenu>
+                                <MenuItem Visibility="Visible" Header="{Binding Data.TranslationViewObject.OverviewDataGridContextMenuOpen, Source={StaticResource DataContextProxy}}"
+                                      Command="{Binding Data.OpenMailCommand, Source={StaticResource DataContextProxy}}" />
+                                <Separator/>
+                                <MenuItem Visibility="Visible" Header="{Binding Data.TranslationViewObject.OverviewRemoveSelectedItemsTitle, Source={StaticResource DataContextProxy}}"
+                                      Command="{Binding Data.UnlistSelectedMails, Source={StaticResource DataContextProxy}}" />
+                                <MenuItem Visibility="Visible" Header="{Binding Data.TranslationViewObject.OverviewLeaveSelectedItemsTitle, Source={StaticResource DataContextProxy}}"
+                                      Command="{Binding Data.LeaveOnlySelectedMails, Source={StaticResource DataContextProxy}}" />
+
+                            </ContextMenu>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenMailCommand}"/>
+            </DataGrid.InputBindings>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{Binding Data.TranslationViewObject.OverviewDataGridDateHeader, Source={StaticResource DataContextProxy}}" Binding="{Binding Path=DateCreated, Mode=OneWay}"/>
+                <DataGridTextColumn Header="{Binding Data.TranslationViewObject.OverviewDataGridCoordinatesHeader, Source={StaticResource DataContextProxy}}" Binding="{Binding Path=RecipientsCoordinates, Mode=OneWay}"/>
+                <DataGridTextColumn Header="{Binding Data.TranslationViewObject.OverviewDataGridNameHeader, Source={StaticResource DataContextProxy}}" Binding="{Binding Path=Name, Mode=OneWay}" Width="150"/>
+                <DataGridTextColumn Header="{Binding Data.TranslationViewObject.OverviewDataGridAttachmentsHeader, Source={StaticResource DataContextProxy}}" Binding="{Binding Path=Attachments, Mode=OneWay}"/>
+                <DataGridTextColumn Header="{Binding Data.TranslationViewObject.OverviewDataGridAdditionalNotesHeader, Source={StaticResource DataContextProxy}}" Binding="{Binding Path=AdditionalNotes, Mode=OneWay}" Width="150"/>
+                <DataGridTextColumn Header="{Binding Data.TranslationViewObject.OverviewDataGridInlineMessageHeader, Source={StaticResource DataContextProxy}}" Binding="{Binding Path=InlineMessage, Mode=OneWay}" Width="*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <DockPanel Grid.Row="2" Grid.Column="0" MinHeight="20" MaxHeight="40" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right">
+                <Button Name="CloseRepoButton" Content="{Binding TranslationViewObject.OverviewCloseRepoButtonText}" Command="{Binding ClickCloseRepoButtonCommand}"/>
+                <Button Name="ShowAllMailsButton" Content="{Binding TranslationViewObject.OverviewShowAllMailsButtonText}" Command="{Binding ClickShowAllMailsButtonCommand}"/>
+                
+                <Button Name="IncreaseMailsPerPageButton" Width="20" Content="+" Command="{Binding ClickIncreaseMailsPerPageButtonCommand}">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} ({1}: {2})">
+                                    <Binding Path="TranslationViewObject.OverviewIncreaseRowsPerPageTooltip"/>
+                                    <Binding Path="TranslationViewObject.OverviewChangeRowsPerPageTooltipCurrentValue"/>
+                                    <Binding Path="MailsPerPage"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Button.ToolTip>
+                </Button>
+                
+                <Button Name="DecreaseMailsPerPageButton" Width="20" Content="-" Command="{Binding ClickDecreaseMailsPerPageButtonCommand}">
+                    <Button.ToolTip>
+                        <TextBlock>
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} ({1}: {2})">
+                                    <Binding Path="TranslationViewObject.OverviewDecreaseRowsPerPageTooltip"/>
+                                    <Binding Path="TranslationViewObject.OverviewChangeRowsPerPageTooltipCurrentValue"/>
+                                    <Binding Path="MailsPerPage"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </Button.ToolTip>
+                </Button>
+                    
+                <TextBox Text="{Binding CurrentPageNumber}" MinWidth="30" MaxLines="1" HorizontalContentAlignment="Center" KeyUp="TextBox_KeyEnterUpdate"/>
+                <Label Content="/" VerticalAlignment="Center"/>
+                <Label Content="{Binding MaxPageNumber}" MinWidth="20" VerticalAlignment="Center"/>
+                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="40">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0}: {1}">
+                            <Binding Path="TranslationViewObject.OverviewTotalMessagesTextBlock"/>
+                            <Binding Path="MsgFileNames" Converter="{StaticResource CountConverter}"/>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+                
+                <Border Width="10"></Border>
+                <Button Name="PreviousPageButton" Content="&lt;" Command="{Binding ClickPreviousPageButtonCommand}" ToolTip="{Binding TranslationViewObject.OverviewPreviousPageTooltip}"/>
+                <Button Name="NextPageButton" Content=">" Command="{Binding ClickNextPageButtonCommand}" ToolTip="{Binding TranslationViewObject.OverviewNextPageTooltip}"/>
+            </StackPanel>
+            
+            <Grid>
+                <ProgressBar Value="{Binding ProgressBarValue}" Minimum="{Binding MinProgressBarValue}" Maximum="{Binding MaxProgressBarValue}"/>
+                <TextBlock Text="{Binding ProgressBarText}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>

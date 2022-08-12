@@ -1,0 +1,4 @@
+ADPS (adps-project.org): Ivan Mikhailov <ivanmihval@yandex.ru>
+Newtonsoft.Json (https://www.newtonsoft.com/json): James Newton-King
+OpenSSL (https://www.openssl.org/): https://github.com/openssl/openssl/blob/master/AUTHORS.md
+openssl-net: https://github.com/openssl-net/openssl-net
